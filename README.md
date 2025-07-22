@@ -25,8 +25,16 @@ npm install -g @jasonzhangf/claude-code-router-enhanced
 ### Usage
 
 ```shell
-# Configure (copy and edit config.example.json to ~/.claude-code-router/config.json)
-ccr code  # Start using Claude Code with retry functionality
+# Basic usage with default settings (3 retries)
+ccr code
+
+# Configure retry attempts
+ccr start --retry 5    # Max 5 retries
+ccr start --retry 0    # Disable retry
+ccr code --retry 2     # Use 2 retries for this session
+
+# Check service status
+ccr status
 ```
 
 ## 🔧 Configuration
@@ -40,10 +48,11 @@ Basic setup:
 
 ## 🔄 Retry Enhancement Details
 
-- **Max Attempts**: 3 retries for failed requests
-- **Backoff Strategy**: Exponential backoff (1s, 2s, 4s)
+- **Configurable Attempts**: Use `--retry N` to set retry attempts (default: 3, use 0 to disable)
+- **Backoff Strategy**: Exponential backoff (1s, 2s, 4s, 8s...)
 - **Retryable Errors**: Network timeouts, 5xx server errors, rate limits (429)
 - **Error Simplification**: Returns clean error messages instead of detailed third-party error responses
+- **HTML Error Detection**: Properly handles Cloudflare and proxy error pages
 
 ## 📚 Original Project
 
