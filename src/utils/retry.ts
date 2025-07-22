@@ -50,17 +50,21 @@ function isRetryableError(error: any): boolean {
 }
 
 /**
- * Create a simple error message based on status code
+ * Create a simple error message based on status code, always returning clean messages
  */
 function createSimpleError(error: any, operationName: string): Error {
   const statusCode = error?.statusCode || error?.status;
   let message: string;
   let code: string;
   
+  // Check if error message contains HTML (common for proxy/gateway errors)
+  const errorMessage = error?.message || '';
+  const isHtmlError = errorMessage.includes('<!DOCTYPE') || errorMessage.includes('<html');
+  
   if (statusCode) {
     switch (statusCode) {
       case 429:
-        message = 'Rate limit exceeded, please try again later';
+        message = 'Rate limit exceeded';
         code = 'rate_limit_exceeded';
         break;
       case 500:
@@ -68,8 +72,8 @@ function createSimpleError(error: any, operationName: string): Error {
         code = 'internal_server_error';
         break;
       case 502:
-        message = 'Service temporarily unavailable';
-        code = 'service_unavailable';
+        message = 'Bad gateway';
+        code = 'bad_gateway';
         break;
       case 503:
         message = 'Service unavailable';
@@ -96,15 +100,21 @@ function createSimpleError(error: any, operationName: string): Error {
         message = 'Network error';
         code = 'network_error';
     }
+  } else if (isHtmlError) {
+    // Handle HTML error responses (like Cloudflare error pages)
+    message = 'Service temporarily unavailable';
+    code = 'service_unavailable';
   } else {
     message = 'Request failed';
     code = 'request_failed';
   }
 
+  // Create a completely clean error with minimal structure
   const simpleError = new Error(message);
-  (simpleError as any).statusCode = statusCode || 500;
+  (simpleError as any).statusCode = statusCode || 502;
   (simpleError as any).code = code;
   (simpleError as any).type = 'api_error';
+  
   return simpleError;
 }
 

@@ -2,6 +2,64 @@ import Server from "@musistudio/llms";
 import { retryWithBackoff } from "./utils/retry";
 import { log } from "./utils/log";
 
+/**
+ * Simplify any error for user-friendly display
+ */
+function simplifyError(error: any): Error {
+  const statusCode = error?.statusCode || error?.status || error?.response?.status;
+  const errorMessage = error?.message || error?.response?.data?.message || '';
+  
+  // Check for HTML content in error message
+  const isHtmlError = errorMessage.includes('<!DOCTYPE') || errorMessage.includes('<html');
+  
+  let message: string;
+  let code: string;
+  
+  if (statusCode) {
+    switch (statusCode) {
+      case 429:
+        message = 'Rate limit exceeded';
+        code = 'rate_limit_exceeded';
+        break;
+      case 500:
+        message = 'Internal server error';
+        code = 'internal_server_error';
+        break;
+      case 502:
+        message = 'Bad gateway';
+        code = 'bad_gateway';
+        break;
+      case 503:
+        message = 'Service unavailable';
+        code = 'service_unavailable';
+        break;
+      case 504:
+        message = 'Gateway timeout';
+        code = 'gateway_timeout';
+        break;
+      default:
+        message = `Error ${statusCode}`;
+        code = 'api_error';
+    }
+  } else if (isHtmlError) {
+    message = 'Service temporarily unavailable';
+    code = 'service_unavailable';
+  } else if (error?.code) {
+    message = 'Network connection failed';
+    code = 'network_error';
+  } else {
+    message = 'Request failed';
+    code = 'request_failed';
+  }
+
+  const simpleError = new Error(message);
+  (simpleError as any).statusCode = statusCode || 502;
+  (simpleError as any).code = code;
+  (simpleError as any).type = 'api_error';
+  
+  return simpleError;
+}
+
 export const createServer = (config: any): Server => {
   const server = new Server(config);
   
@@ -16,17 +74,22 @@ export const createServer = (config: any): Server => {
       return originalFetch(input, init);
     }
     
-    // Apply retry logic for external API calls with conservative settings
-    return retryWithBackoff(
-      () => originalFetch(input, init),
-      `API request to ${url}`,
-      {
-        maxAttempts: 3,
-        initialDelayMs: 1000,
-        maxDelayMs: 5000,
-        backoffFactor: 2
-      }
-    );
+    try {
+      // Apply retry logic for external API calls with conservative settings
+      return await retryWithBackoff(
+        () => originalFetch(input, init),
+        `API request to ${url}`,
+        {
+          maxAttempts: 3,
+          initialDelayMs: 1000,
+          maxDelayMs: 5000,
+          backoffFactor: 2
+        }
+      );
+    } catch (error) {
+      // Ensure all errors are simplified before being thrown
+      throw simplifyError(error);
+    }
   };
   
   return server;
