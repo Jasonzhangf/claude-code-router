@@ -116,7 +116,7 @@ async function main() {
         if (retryAttempts !== 3) { // Only pass if different from default
           startArgs.push("--retry", retryAttempts.toString());
         }
-        const startProcess = spawn("node", [cliPath, ...startArgs], {
+        const startProcess = spawn(process.execPath, [cliPath, ...startArgs], {
           detached: true,
           stdio: "ignore",
         });
