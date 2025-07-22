@@ -10,33 +10,51 @@ import { PID_FILE, REFERENCE_COUNT_FILE } from "./constants";
 import fs, { existsSync, readFileSync } from "fs";
 import {join} from "path";
 
-const command = process.argv[2];
+// Parse command line arguments
+const args = process.argv.slice(2);
+const command = args[0];
+
+// Parse --retry option
+let retryAttempts = 3; // Default value
+const retryIndex = args.findIndex(arg => arg === '--retry');
+if (retryIndex !== -1 && args[retryIndex + 1]) {
+  const retryValue = parseInt(args[retryIndex + 1]);
+  if (!isNaN(retryValue) && retryValue >= 0) {
+    retryAttempts = retryValue;
+    // Remove --retry and its value from args
+    args.splice(retryIndex, 2);
+  }
+}
 
 const HELP_TEXT = `
 ╔════════════════════════════════════════════════════════╗
 ║           Claude Code Router Enhanced v${version.padEnd(10)} ║
 ╚════════════════════════════════════════════════════════╝
 
-Usage: ccr [command]
+Usage: ccr [command] [options]
 
 Commands:
-  start         Start server 
-  stop          Stop server
-  restart       Restart server
-  status        Show server status
-  code          Execute claude command
-  -v, version   Show version information
-  -h, help      Show help information
+  start [--retry N] Start server with retry configuration
+  stop              Stop server
+  restart           Restart server
+  status            Show server status
+  code [args...]    Execute claude command
+  -v, version       Show version information
+  -h, help          Show help information
+
+Options:
+  --retry N         Set retry attempts for API failures (default: 3)
 
 Features:
-  🔄 Auto-retry with exponential backoff
+  🔄 Auto-retry with exponential backoff (configurable)
   ⚡ Intelligent model routing
   🛡️  Enhanced error handling
   🔍 Smart Claude Code detection
 
 Examples:
-  ccr start
+  ccr start --retry 5
   ccr code "Write a Hello World"
+  ccr start --retry 0    # Disable retry
 
 Note: Requires @anthropic-ai/claude-code to be installed globally
 `;
@@ -63,6 +81,8 @@ async function waitForService(
 async function main() {
   switch (command) {
     case "start":
+      // Pass retry attempts to the server
+      process.env.RETRY_ATTEMPTS = retryAttempts.toString();
       run();
       break;
     case "stop":
@@ -92,7 +112,11 @@ async function main() {
       if (!isServiceRunning()) {
         console.log("Service not running, starting service...");
         const cliPath = join(__dirname, "cli.js");
-        const startProcess = spawn("node", [cliPath, "start"], {
+        const startArgs = ["start"];
+        if (retryAttempts !== 3) { // Only pass if different from default
+          startArgs.push("--retry", retryAttempts.toString());
+        }
+        const startProcess = spawn("node", [cliPath, ...startArgs], {
           detached: true,
           stdio: "ignore",
         });
@@ -105,7 +129,13 @@ async function main() {
         startProcess.unref();
 
         if (await waitForService()) {
-          executeCodeCommand(process.argv.slice(3));
+          // Remove --retry args from the arguments passed to code command
+          const codeArgs = process.argv.slice(3).filter((arg, index, arr) => {
+            if (arg === '--retry') return false;
+            if (arr[index - 1] === '--retry') return false;
+            return true;
+          });
+          executeCodeCommand(codeArgs);
         } else {
           console.error(
             "Service startup timeout, please manually run `ccr start` to start the service"
@@ -113,7 +143,13 @@ async function main() {
           process.exit(1);
         }
       } else {
-        executeCodeCommand(process.argv.slice(3));
+        // Remove --retry args from the arguments passed to code command
+        const codeArgs = process.argv.slice(3).filter((arg, index, arr) => {
+          if (arg === '--retry') return false;
+          if (arr[index - 1] === '--retry') return false;
+          return true;
+        });
+        executeCodeCommand(codeArgs);
       }
       break;
     case "-v":

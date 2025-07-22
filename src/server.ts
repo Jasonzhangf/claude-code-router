@@ -63,7 +63,15 @@ function simplifyError(error: any): Error {
 export const createServer = (config: any): Server => {
   const server = new Server(config);
   
-  // Add retry logic with reduced attempts (3 max) to handle network issues
+  // Get retry attempts from environment variable or use default
+  const retryAttempts = parseInt(process.env.RETRY_ATTEMPTS || '3');
+  const retryEnabled = retryAttempts > 0;
+  
+  // Always show retry configuration (not just when logging is enabled)
+  console.log(`🔄 Retry configuration: ${retryEnabled ? `${retryAttempts} attempts` : 'disabled'}`);
+  log(`🔄 Retry configuration: ${retryEnabled ? `${retryAttempts} attempts` : 'disabled'}`);
+  
+  // Add retry logic with configurable attempts to handle network issues
   // without disrupting conversation flow
   const originalFetch = global.fetch;
   global.fetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
@@ -74,13 +82,22 @@ export const createServer = (config: any): Server => {
       return originalFetch(input, init);
     }
     
+    // If retry is disabled, just make the request directly
+    if (!retryEnabled) {
+      try {
+        return await originalFetch(input, init);
+      } catch (error) {
+        throw simplifyError(error);
+      }
+    }
+    
     try {
-      // Apply retry logic for external API calls with conservative settings
+      // Apply retry logic for external API calls with configurable settings
       return await retryWithBackoff(
         () => originalFetch(input, init),
         `API request to ${url}`,
         {
-          maxAttempts: 3,
+          maxAttempts: retryAttempts,
           initialDelayMs: 1000,
           maxDelayMs: 5000,
           backoffFactor: 2
