@@ -4,6 +4,7 @@ import { showStatus } from "./utils/status";
 import { executeCodeCommand } from "./utils/codeCommand";
 import { cleanupPidFile, isServiceRunning } from "./utils/processCheck";
 import { version } from "../package.json";
+import { displayServiceStatus } from "./utils/banner";
 import { spawn } from "child_process";
 import { PID_FILE, REFERENCE_COUNT_FILE } from "./constants";
 import fs, { existsSync, readFileSync } from "fs";
@@ -12,6 +13,10 @@ import {join} from "path";
 const command = process.argv[2];
 
 const HELP_TEXT = `
+╔════════════════════════════════════════════════════════╗
+║           Claude Code Router Enhanced v${version.padEnd(10)} ║
+╚════════════════════════════════════════════════════════╝
+
 Usage: ccr [command]
 
 Commands:
@@ -23,9 +28,17 @@ Commands:
   -v, version   Show version information
   -h, help      Show help information
 
-Example:
+Features:
+  🔄 Auto-retry with exponential backoff
+  ⚡ Intelligent model routing
+  🛡️  Enhanced error handling
+  🔍 Smart Claude Code detection
+
+Examples:
   ccr start
   ccr code "Write a Hello World"
+
+Note: Requires @anthropic-ai/claude-code to be installed globally
 `;
 
 async function waitForService(
@@ -64,9 +77,7 @@ async function main() {
             // Ignore cleanup errors
           }
         }
-        console.log(
-          "claude code router service has been successfully stopped."
-        );
+        displayServiceStatus('stopped');
       } catch (e) {
         console.log(
           "Failed to stop the service. It may have already been stopped."
@@ -107,7 +118,17 @@ async function main() {
       break;
     case "-v":
     case "version":
-      console.log(`claude-code-router version: ${version}`);
+      console.log(`
+╔════════════════════════════════════════════════════════╗
+║           Claude Code Router Enhanced                  ║
+║                                                        ║
+║  🚀 Version: ${version.padEnd(30)} ║
+║  📦 Package: @musistudio/claude-code-router            ║
+║  🔄 Auto-retry: ✅ Enabled                            ║
+║  ⚡ Smart routing: ✅ Enabled                         ║
+║                                                        ║
+║  Repo: github.com/musistudio/claude-code-router       ║
+╚════════════════════════════════════════════════════════╝`);
       break;
     case "-h":
     case "help":

@@ -1,10 +1,12 @@
 import { getServiceInfo } from './processCheck';
+import { version } from '../../package.json';
 
 export async function showStatus() {
     const info = await getServiceInfo();
     
-    console.log('\n📊 Claude Code Router Status');
-    console.log('═'.repeat(40));
+    console.log('\n📊 Claude Code Router Enhanced Status');
+    console.log(`🚀 Version: ${version}`);
+    console.log('═'.repeat(50));
     
     if (info.running) {
         console.log('✅ Status: Running');

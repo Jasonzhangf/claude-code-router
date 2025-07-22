@@ -12,6 +12,7 @@ import {
   savePid,
 } from "./utils/processCheck";
 import { CONFIG_FILE } from "./constants";
+import { displayStartupBanner, displayServiceStatus } from "./utils/banner";
 
 async function initializeClaudeConfig() {
   const homeDir = homedir();
@@ -38,11 +39,16 @@ interface RunOptions {
 }
 
 async function run(options: RunOptions = {}) {
+  // Display startup banner
+  displayStartupBanner();
+  
   // Check if service is already running
   if (isServiceRunning()) {
-    console.log("✅ Service is already running in the background.");
+    displayServiceStatus('running');
     return;
   }
+  
+  displayServiceStatus('starting');
 
   await initializeClaudeConfig();
   await initDir();
@@ -97,7 +103,10 @@ async function run(options: RunOptions = {}) {
   server.addHook("preHandler", async (req, reply) =>
     router(req, reply, config)
   );
+  
+  // Start server and display status
   server.start();
+  displayServiceStatus('running', servicePort);
 }
 
 export { run };
