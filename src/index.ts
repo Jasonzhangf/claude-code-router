@@ -6,6 +6,8 @@ import { initConfig, initDir } from "./utils";
 import { createServer } from "./server";
 import { router } from "./utils/router";
 import { apiKeyAuth } from "./middleware/auth";
+import k2ccTransformer from "./transformers/k2cc";
+import requestLoggerTransformer from "./transformers/request-logger";
 import {
   cleanupPidFile,
   isServiceRunning,
@@ -13,6 +15,7 @@ import {
 } from "./utils/processCheck";
 import { CONFIG_FILE } from "./constants";
 import { displayStartupBanner, displayServiceStatus } from "./utils/banner";
+import { initializeTokens, setupPeriodicTokenRefresh, cleanupTokens } from "./utils/startup";
 
 async function initializeClaudeConfig() {
   const homeDir = homedir();
@@ -50,6 +53,9 @@ async function run(options: RunOptions = {}) {
   
   displayServiceStatus('starting');
 
+  // Initialize token system first
+  await initializeTokens();
+
   await initializeClaudeConfig();
   await initDir();
   const config = await initConfig();
@@ -62,7 +68,7 @@ async function run(options: RunOptions = {}) {
     );
   }
 
-  const port = config.PORT || 3456;
+  const port = options.port || config.PORT || config.Server?.port || 3456;
 
   // Save the PID of the background process
   savePid(process.pid);
@@ -70,12 +76,14 @@ async function run(options: RunOptions = {}) {
   // Handle SIGINT (Ctrl+C) to clean up PID file
   process.on("SIGINT", () => {
     console.log("Received SIGINT, cleaning up...");
+    cleanupTokens();
     cleanupPidFile();
     process.exit(0);
   });
 
   // Handle SIGTERM to clean up PID file
   process.on("SIGTERM", () => {
+    cleanupTokens();
     cleanupPidFile();
     process.exit(0);
   });
@@ -91,7 +99,7 @@ async function run(options: RunOptions = {}) {
       // ...config,
       providers: config.Providers || config.providers,
       HOST: HOST,
-      PORT: servicePort,
+      PORT: servicePort || port,
       LOG_FILE: join(
         homedir(),
         ".claude-code-router",
@@ -99,13 +107,27 @@ async function run(options: RunOptions = {}) {
       ),
     },
   });
+  // Register k2cc transformer manually since it's not in @musistudio/llms package
+  if (server.transformerService) {
+    server.transformerService.registerTransformer('k2cc', k2ccTransformer);
+    console.log('✅ K2cc transformer registered successfully');
+  } else {
+    console.warn('⚠️ TransformerService not available - k2cc transformer not registered');
+  }
+
   server.addHook("preHandler", apiKeyAuth(config));
   server.addHook("preHandler", async (req, reply) =>
     router(req, reply, config)
   );
+
+  // Health check endpoint already provided by @musistudio/llms
   
+  // Setup periodic token refresh
+  setupPeriodicTokenRefresh();
+
   // Start server and display status
-  server.start();
+  console.log(`[DEBUG] Starting server on port: ${servicePort || port}`);
+  await server.start();
   displayServiceStatus('running', servicePort);
 }
 

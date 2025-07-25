@@ -1,0 +1,53 @@
+{
+  "timestamp": "2025-07-25T12:54:52.052Z",
+  "analysis": "kiro2cc format comparison for UnknownOperationException debugging",
+  "standardFormats": {
+    "anthropicRequest": {
+      "model": "claude-sonnet-4-20250514",
+      "max_tokens": 100,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Hello, test message"
+        }
+      ],
+      "stream": false
+    },
+    "codewhispererRequest": {
+      "conversationState": {
+        "chatTriggerType": "MANUAL",
+        "conversationId": "test-uuid-123",
+        "currentMessage": {
+          "userInputMessage": {
+            "content": "Hello, test message",
+            "modelId": "CLAUDE_SONNET_4_20250514_V1_0",
+            "origin": "AI_EDITOR",
+            "userInputMessageContext": {
+              "tools": [],
+              "toolResults": []
+            }
+          }
+        },
+        "history": []
+      },
+      "profileArn": "arn:aws:codewhisperer:us-east-1:699475941385:profile/EHGA3GRVQMUK"
+    },
+    "headers": {
+      "Content-Type": "application/x-amz-json-1.1",
+      "X-Amz-Target": "CodeWhispererService.GenerateAssistantResponse",
+      "User-Agent": "k2cc-transformer/1.0.0"
+    }
+  },
+  "conclusions": [
+    "API endpoints are identical",
+    "Request transformation logic should be identical",
+    "Authentication method is identical",
+    "Issue likely in implementation details or token validity"
+  ],
+  "nextSteps": [
+    "Run direct curl test",
+    "Compare actual network requests",
+    "Verify token permissions",
+    "Check AWS CloudTrail logs"
+  ]
+}

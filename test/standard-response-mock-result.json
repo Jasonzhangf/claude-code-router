@@ -1,0 +1,133 @@
+{
+  "timestamp": "2025-07-25T11:39:39.402Z",
+  "summary": {
+    "total": 4,
+    "passed": 4
+  },
+  "results": {
+    "step1": {
+      "success": true,
+      "data": {
+        "id": "msg_mock_1753443579401",
+        "object": "chat.completion",
+        "created": 1753443579,
+        "model": "claude-sonnet-4-20250514",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Hello! How can I help you today?"
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 10,
+          "completion_tokens": 8,
+          "total_tokens": 18
+        }
+      }
+    },
+    "step2": {
+      "success": true,
+      "data": {
+        "profileArn": "arn:aws:codewhisperer:us-east-1:699475941385:profile/EHGA3GRVQMUK",
+        "conversationState": {
+          "chatTriggerType": "MANUAL",
+          "conversationId": "test-uuid-12345",
+          "currentMessage": {
+            "userInputMessage": {
+              "content": "Hello, test message",
+              "modelId": "CLAUDE_SONNET_4_20250514_V1_0",
+              "origin": "AI_EDITOR",
+              "userInputMessageContext": {
+                "tools": [],
+                "toolResults": []
+              }
+            }
+          },
+          "history": []
+        }
+      }
+    },
+    "step3": {
+      "success": true,
+      "flow": {
+        "input": {
+          "model": "claude-sonnet-4-20250514",
+          "max_tokens": 100,
+          "messages": [
+            {
+              "role": "user",
+              "content": "Test message for simulation"
+            }
+          ]
+        },
+        "codewhisperer": {
+          "profileArn": "arn:aws:codewhisperer:us-east-1:699475941385:profile/EHGA3GRVQMUK",
+          "conversationState": {
+            "chatTriggerType": "MANUAL",
+            "conversationId": "simulation-uuid",
+            "currentMessage": {
+              "userInputMessage": {
+                "content": "Test message for simulation",
+                "modelId": "CLAUDE_SONNET_4_20250514_V1_0",
+                "origin": "AI_EDITOR",
+                "userInputMessageContext": {
+                  "tools": [],
+                  "toolResults": []
+                }
+              }
+            },
+            "history": []
+          }
+        },
+        "openai": {
+          "id": "msg_simulation_1753443579402",
+          "object": "chat.completion",
+          "created": 1753443579,
+          "model": "claude-sonnet-4-20250514",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "Hello! How can I help you today?"
+              },
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 15,
+            "completion_tokens": 10,
+            "total_tokens": 25
+          }
+        },
+        "output": {
+          "id": "msg_simulation_1753443579402",
+          "type": "message",
+          "role": "assistant",
+          "model": "claude-sonnet-4-20250514",
+          "content": [
+            {
+              "type": "text",
+              "text": "Hello! How can I help you today?"
+            }
+          ],
+          "stop_reason": "end_turn",
+          "stop_sequence": null,
+          "usage": {
+            "input_tokens": 15,
+            "output_tokens": 10
+          }
+        }
+      }
+    },
+    "step4": {
+      "success": true
+    }
+  },
+  "status": "ALL_PASSED",
+  "nextStep": "READY_FOR_LIVE_TESTING"
+}

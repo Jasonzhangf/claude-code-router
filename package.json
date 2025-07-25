@@ -1,12 +1,12 @@
 {
   "name": "@jasonzhangf/claude-code-router-enhanced",
-  "version": "1.0.28-enhanced",
+  "version": "1.0.29-enhanced",
   "description": "Use Claude Code without an Anthropics account and route it to another LLM provider",
   "bin": {
     "ccr": "./dist/cli.js"
   },
   "scripts": {
-    "build": "esbuild src/cli.ts --bundle --platform=node --outfile=dist/cli.js && shx cp node_modules/tiktoken/tiktoken_bg.wasm dist/tiktoken_bg.wasm",
+    "build": "esbuild src/cli.ts --bundle --platform=node --outfile=dist/cli.js --external:@musistudio/llms && shx cp node_modules/tiktoken/tiktoken_bg.wasm dist/tiktoken_bg.wasm",
     "release": "npm run build && npm publish"
   },
   "keywords": [

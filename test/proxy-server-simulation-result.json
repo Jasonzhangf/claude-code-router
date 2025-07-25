@@ -1,0 +1,35 @@
+{
+  "timestamp": "2025-07-25T11:26:15.762Z",
+  "success": true,
+  "input": {
+    "request": {
+      "model": "claude-sonnet-4-20250514",
+      "max_tokens": 100,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Please explain machine learning briefly."
+        }
+      ]
+    },
+    "mockResponseSize": 8179
+  },
+  "processing": {
+    "transformRequestIn": true,
+    "httpRequest": true,
+    "transformResponseOut": true,
+    "anthropicConversion": true
+  },
+  "content": {
+    "fragmentsCount": 63,
+    "extractedLength": 735,
+    "finalLength": 735,
+    "contentMatch": true,
+    "consistent": true
+  },
+  "finalResponse": {
+    "id": "msg_1753442775762",
+    "contentPreview": "Machine learning is a subset of artificial intelligence that enables computers to learn patterns from data without explicit programming. \n\nKey concepts include:\n- **Data**: The foundation - can be str",
+    "fullContent": "Machine learning is a subset of artificial intelligence that enables computers to learn patterns from data without explicit programming. \n\nKey concepts include:\n- **Data**: The foundation - can be structured (numbers, categories) or unstructured (text, images)\n- **Training**: Teaching algorithms using labeled examples\n- **Models**: Mathematical representations that capture patterns\n- **Prediction**: Using learned patterns on new, unseen data\n\nCommon algorithms include linear regression, decision trees, neural networks, and support vector machines. Applications span from email spam detection to autonomous vehicles.\n\nThe process involves collecting data, training models, evaluating performance, and deploying for real-world use."
+  }
+}

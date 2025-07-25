@@ -1,0 +1,269 @@
+{
+  "timestamp": "2025-07-25T12:47:04.049Z",
+  "summary": {
+    "total": 4,
+    "successful": 4,
+    "failed": 0
+  },
+  "results": [
+    {
+      "test": "简单文本请求",
+      "success": true,
+      "request": {
+        "model": "claude-sonnet-4-20250514",
+        "max_tokens": 100,
+        "messages": [
+          {
+            "role": "user",
+            "content": "Hello, how are you?"
+          }
+        ]
+      },
+      "expectedTransform": {
+        "profileArn": "arn:aws:codewhisperer:us-east-1:699475941385:profile/EHGA3GRVQMUK",
+        "conversationState": {
+          "chatTriggerType": "MANUAL",
+          "conversationId": "test-uuid-123",
+          "currentMessage": {
+            "userInputMessage": {
+              "content": "Hello, how are you?",
+              "modelId": "CLAUDE_SONNET_4_20250514_V1_0",
+              "origin": "AI_EDITOR",
+              "userInputMessageContext": {
+                "tools": [],
+                "toolResults": []
+              }
+            }
+          },
+          "history": []
+        }
+      },
+      "response": {
+        "id": "chatcmpl-20250725204643253983321e7akwrGz",
+        "type": "message",
+        "role": "assistant",
+        "model": "gemini-2.5-pro",
+        "content": [],
+        "stop_reason": "max_tokens",
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 7,
+          "output_tokens": 99
+        }
+      }
+    },
+    {
+      "test": "多轮对话请求",
+      "success": true,
+      "request": {
+        "model": "claude-sonnet-4-20250514",
+        "max_tokens": 150,
+        "messages": [
+          {
+            "role": "user",
+            "content": "What is machine learning?"
+          },
+          {
+            "role": "assistant",
+            "content": "Machine learning is a subset of artificial intelligence..."
+          },
+          {
+            "role": "user",
+            "content": "Can you give me a simple example?"
+          }
+        ]
+      },
+      "expectedTransform": {
+        "profileArn": "arn:aws:codewhisperer:us-east-1:699475941385:profile/EHGA3GRVQMUK",
+        "conversationState": {
+          "chatTriggerType": "MANUAL",
+          "conversationId": "test-uuid-123",
+          "currentMessage": {
+            "userInputMessage": {
+              "content": "Can you give me a simple example?",
+              "modelId": "CLAUDE_SONNET_4_20250514_V1_0",
+              "origin": "AI_EDITOR",
+              "userInputMessageContext": {
+                "tools": [],
+                "toolResults": []
+              }
+            }
+          },
+          "history": [
+            {
+              "userInputMessage": {
+                "content": "What is machine learning?",
+                "modelId": "CLAUDE_SONNET_4_20250514_V1_0",
+                "origin": "AI_EDITOR"
+              }
+            },
+            {
+              "assistantResponseMessage": {
+                "content": "Machine learning is a subset of artificial intelligence...",
+                "toolUses": []
+              }
+            }
+          ]
+        }
+      },
+      "response": {
+        "id": "chatcmpl-20250725204647865884371quwb7gJ0",
+        "type": "message",
+        "role": "assistant",
+        "model": "gemini-2.5-pro",
+        "content": [],
+        "stop_reason": "max_tokens",
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 25,
+          "output_tokens": 149
+        }
+      }
+    },
+    {
+      "test": "带工具的请求",
+      "success": true,
+      "request": {
+        "model": "claude-sonnet-4-20250514",
+        "max_tokens": 200,
+        "messages": [
+          {
+            "role": "user",
+            "content": "What's the weather like today?"
+          }
+        ],
+        "tools": [
+          {
+            "name": "get_weather",
+            "description": "Get current weather for a location",
+            "input_schema": {
+              "type": "object",
+              "properties": {
+                "location": {
+                  "type": "string",
+                  "description": "The city and state, e.g. San Francisco, CA"
+                }
+              },
+              "required": [
+                "location"
+              ]
+            }
+          }
+        ]
+      },
+      "expectedTransform": {
+        "profileArn": "arn:aws:codewhisperer:us-east-1:699475941385:profile/EHGA3GRVQMUK",
+        "conversationState": {
+          "chatTriggerType": "MANUAL",
+          "conversationId": "test-uuid-123",
+          "currentMessage": {
+            "userInputMessage": {
+              "content": "What's the weather like today?",
+              "modelId": "CLAUDE_SONNET_4_20250514_V1_0",
+              "origin": "AI_EDITOR",
+              "userInputMessageContext": {
+                "tools": [
+                  {
+                    "toolSpecification": {
+                      "name": "get_weather",
+                      "description": "Get current weather for a location",
+                      "inputSchema": {
+                        "json": {
+                          "type": "object",
+                          "properties": {
+                            "location": {
+                              "type": "string",
+                              "description": "The city and state, e.g. San Francisco, CA"
+                            }
+                          },
+                          "required": [
+                            "location"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ],
+                "toolResults": []
+              }
+            }
+          },
+          "history": []
+        }
+      },
+      "response": {
+        "id": "chatcmpl-202507252046541111720464zElRqhf",
+        "type": "message",
+        "role": "assistant",
+        "model": "gemini-2.5-pro",
+        "content": [
+          {
+            "type": "text",
+            "text": "I can get you the weather, but for what location?"
+          }
+        ],
+        "stop_reason": "end_turn",
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 59,
+          "output_tokens": 138
+        }
+      }
+    },
+    {
+      "test": "复杂内容块请求",
+      "success": true,
+      "request": {
+        "model": "claude-sonnet-4-20250514",
+        "max_tokens": 300,
+        "messages": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "type": "text",
+                "text": "Please analyze this code:"
+              },
+              {
+                "type": "text",
+                "text": "function hello() { console.log('world'); }"
+              }
+            ]
+          }
+        ]
+      },
+      "expectedTransform": {
+        "profileArn": "arn:aws:codewhisperer:us-east-1:699475941385:profile/EHGA3GRVQMUK",
+        "conversationState": {
+          "chatTriggerType": "MANUAL",
+          "conversationId": "test-uuid-123",
+          "currentMessage": {
+            "userInputMessage": {
+              "content": "Please analyze this code:\\nfunction hello() { console.log('world'); }",
+              "modelId": "CLAUDE_SONNET_4_20250514_V1_0",
+              "origin": "AI_EDITOR",
+              "userInputMessageContext": {
+                "tools": [],
+                "toolResults": []
+              }
+            }
+          },
+          "history": []
+        }
+      },
+      "response": {
+        "id": "chatcmpl-20250725204658282402507oaMvvtOS",
+        "type": "message",
+        "role": "assistant",
+        "model": "gemini-2.5-pro",
+        "content": [],
+        "stop_reason": "max_tokens",
+        "stop_sequence": null,
+        "usage": {
+          "input_tokens": 17,
+          "output_tokens": 299
+        }
+      }
+    }
+  ]
+}

@@ -68,16 +68,22 @@ async function checkClaudeInstallation(): Promise<string | null> {
   });
 }
 
-export async function executeCodeCommand(args: string[] = []) {
-  // Display enhanced version info
+export async function executeCodeCommand(args: string[] = [], isDevMode = false) {
+  // Display enhanced version info with dev mode indicator
+  const modeIndicator = isDevMode ? '🧪 Development Mode' : '🚀 Production Mode';
+  const configFile = isDevMode ? 'config-dev.json' : 'config.json';
+  
   console.log(`
 ╔════════════════════════════════════════════════════════╗
 ║  🚀 Claude Code Router Enhanced v${version.padEnd(10)} Active  ║
 ║  🔄 Auto-retry enabled • ⚡ Smart routing enabled      ║
 ║  🛡️  Enhanced error handling • 🔍 Smart detection     ║
+║  ${modeIndicator.padEnd(42)} ║
+║  📄 Config: ${configFile.padEnd(35)} ║
+║  📝 Conversation logging: ENABLED                      ║
 ╚════════════════════════════════════════════════════════╝
 
-Starting Claude Code with enhanced routing...
+Starting Claude Code with enhanced routing and logging...
 `);
 
   // Check if claude command exists
@@ -91,12 +97,35 @@ Starting Claude Code with enhanced routing...
 
   log(`Found claude command at: ${claudePath}`);
 
+  // Set development mode environment variable if needed
+  if (isDevMode) {
+    process.env.NODE_ENV = 'development';
+  }
+
+  // Setup conversation logging
+  const logDir = require('path').join(require('os').homedir(), '.claude-code-router');
+  const conversationLogFile = require('path').join(logDir, 'claude-conversations.log');
+  
+  // Ensure log directory exists
+  if (!require('fs').existsSync(logDir)) {
+    require('fs').mkdirSync(logDir, { recursive: true });
+  }
+  
+  console.log(`📝 Session logs will be saved to: ${conversationLogFile}`);
+  
   // Set environment variables
   const config = await readConfigFile();
+  const port = config.PORT || (isDevMode ? 3457 : 3456);
   const env = {
     ...process.env,
-    ANTHROPIC_BASE_URL: `http://127.0.0.1:${config.PORT || 3456}`,
+    ANTHROPIC_BASE_URL: `http://127.0.0.1:${port}`,
     API_TIMEOUT_MS: "600000",
+    // Enable Claude Code conversation logging
+    CLAUDE_CONVERSATION_LOG: conversationLogFile,
+    CLAUDE_DEBUG: "1", // Enable debug mode for more verbose logging
+    CLAUDE_LOG_REQUESTS: "1", // Log all requests
+    CLAUDE_LOG_RESPONSES: "1", // Log all responses
+    CCR_CONVERSATION_LOGGING: "enabled", // Our custom flag
   };
 
   // Clean up conflicting auth variables

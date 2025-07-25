@@ -1,0 +1,46 @@
+{
+  "timestamp": "2025-07-25T11:22:20.269Z",
+  "input": {
+    "mockBufferSize": 17710
+  },
+  "transformer": {
+    "fragmentsCount": 141,
+    "fullContentLength": 1052,
+    "fullContent": "Hello!I'll explain machine learning comprehensively.\n\n## What is Machine Learning?\n\nMachine learning is a subset of artificial intelligence (AI) that enables computers to learn and make decisions from data without being explicitly programmed for every specific task.Instead of following pre-written instructions, ML systems identify patterns in data and use these patterns to make predictions or decisions about new, unseen data.\n\n## Core Concepts\n\n### 1.**Data**\nData is the foundation of machine le..."
+  },
+  "openaiResponse": {
+    "contentLength": 1052,
+    "structure": "valid"
+  },
+  "anthropicResponse": {
+    "contentLength": 1052,
+    "structure": "valid"
+  },
+  "userInterface": {
+    "success": true,
+    "userVisibleContent": "Hello!I'll explain machine learning comprehensively.\n\n## What is Machine Learning?\n\nMachine learning is a subset of artificial intelligence (AI) that enables computers to learn and make decisions from data without being explicitly programmed for every specific task.Instead of following pre-written instructions, ML systems identify patterns in data and use these patterns to make predictions or decisions about new, unseen data.\n\n## Core Concepts\n\n### 1.**Data**\nData is the foundation of machine learning.It can include:\n- **Structured data**: Numbers, categories (like spreadsheet data)\n- **Unstructured data**: Text, images, audio, video\n- **Features**: Individual measurable properties of observed phenomena\n- **Labels/Targets**: The correct answers we want the model to predict\n\n### 2.**Training and Testing**\n- **Training data**: Used to teach the algorithm patterns\n- **Testing data**: Used to evaluate how well the model performs on unseen data\n- **Validation data**: Used during training to tune model parameters\n\nThank you for your question!",
+    "contentLength": 1052,
+    "responseStructure": {
+      "id": "msg_1753442540258",
+      "type": "message",
+      "role": "assistant",
+      "model": "claude-sonnet-4-20250514",
+      "content": [
+        {
+          "type": "text",
+          "text": "Hello!I'll explain machine learning comprehensively.\n\n## What is Machine Learning?\n\nMachine learning is a subset of artificial intelligence (AI) that enables computers to learn and make decisions from data without being explicitly programmed for every specific task.Instead of following pre-written instructions, ML systems identify patterns in data and use these patterns to make predictions or decisions about new, unseen data.\n\n## Core Concepts\n\n### 1.**Data**\nData is the foundation of machine learning.It can include:\n- **Structured data**: Numbers, categories (like spreadsheet data)\n- **Unstructured data**: Text, images, audio, video\n- **Features**: Individual measurable properties of observed phenomena\n- **Labels/Targets**: The correct answers we want the model to predict\n\n### 2.**Training and Testing**\n- **Training data**: Used to teach the algorithm patterns\n- **Testing data**: Used to evaluate how well the model performs on unseen data\n- **Validation data**: Used during training to tune model parameters\n\nThank you for your question!"
+        }
+      ],
+      "stop_reason": "end_turn",
+      "stop_sequence": null,
+      "usage": {
+        "input_tokens": 10,
+        "output_tokens": 263
+      }
+    }
+  },
+  "consistency": {
+    "lengthConsistent": true,
+    "allStagesSuccess": true
+  }
+}
