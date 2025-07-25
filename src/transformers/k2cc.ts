@@ -385,7 +385,9 @@ export class K2ccTransformer {
     }
 
     // Handle history
+    console.log(`🔧 K2cc: Checking history conditions - system: ${anthropicReq.system ? anthropicReq.system.length : 0}, messages: ${anthropicReq.messages.length}`);
     if (anthropicReq.system && anthropicReq.system.length > 0 || anthropicReq.messages.length > 1) {
+      console.log('🔧 K2cc: Processing conversation history');
       const history: any[] = [];
 
       // Add system messages
@@ -408,8 +410,11 @@ export class K2ccTransformer {
       }
 
       // Add regular messages (excluding the last one which is current)
+      console.log(`🔧 K2cc: Processing ${anthropicReq.messages.length - 1} historical messages`);
       for (let i = 0; i < anthropicReq.messages.length - 1; i++) {
+        console.log(`🔧 K2cc: Processing message ${i}: role=${anthropicReq.messages[i].role}`);
         if (anthropicReq.messages[i].role === 'user') {
+          console.log(`🔧 K2cc: Adding user message to history: "${this.getMessageContent(anthropicReq.messages[i].content)}"`);
           history.push({
             userInputMessage: {
               content: this.getMessageContent(anthropicReq.messages[i].content),
@@ -418,7 +423,9 @@ export class K2ccTransformer {
             }
           });
 
+          // Check if next message exists and is an assistant response (but not the current/last message)
           if (i + 1 < anthropicReq.messages.length - 1 && anthropicReq.messages[i + 1].role === 'assistant') {
+            console.log(`🔧 K2cc: Adding assistant message to history: "${this.getMessageContent(anthropicReq.messages[i + 1].content)}"`);
             history.push({
               assistantResponseMessage: {
                 content: this.getMessageContent(anthropicReq.messages[i + 1].content),
@@ -430,7 +437,10 @@ export class K2ccTransformer {
         }
       }
 
+      console.log(`🔧 K2cc: Built history with ${history.length} entries`);
       cwReq.conversationState.history = history;
+    } else {
+      console.log('🔧 K2cc: No history to process - single message or no system messages');
     }
 
     return cwReq;
